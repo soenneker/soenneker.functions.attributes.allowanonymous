@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Soenneker.Functions.Attributes.AllowAnonymous.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Functions.Attributes.AllowAnonymous\Soenneker.Functions.Attributes.AllowAnonymous.csproj" />
     </ItemGroup>
 
     <ItemGroup>
