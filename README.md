@@ -5,7 +5,7 @@
 
 # Soenneker.Functions.Attributes.AllowAnonymous
 
-An attribute for excluding authentication for Azure functions.
+A marker attribute used by Soenneker's Azure Functions authentication middleware to bypass JWT authentication for a specific function entry point.
 
 ## Install
 
@@ -13,20 +13,28 @@ An attribute for excluding authentication for Azure functions.
 dotnet add package Soenneker.Functions.Attributes.AllowAnonymous
 ```
 
-## Quick start
+## Usage
 
 ```csharp
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Soenneker.Functions.Attributes.AllowAnonymous;
 
+[Function("Health")]
 [AllowAnonymousFunction]
-public void HandleRequest()
+public HttpResponseData Run(
+    [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health")]
+    HttpRequestData request)
 {
-    // This method now carries the marker metadata.
+    HttpResponseData response = request.CreateResponse(System.Net.HttpStatusCode.OK);
+    return response;
 }
 ```
 
-An attribute for excluding authentication for Azure functions.
+Apply the attribute to the same method that carries `[Function]`. The JWT middleware inspects that entry-point method and skips its authentication pipeline when the marker is present.
 
-## What you get
+## Important
 
-- `AllowAnonymousFunctionAttribute` — An attribute for excluding authentication for Azure functions.
+- This package only supplies metadata. It does not alter Azure Functions authorization or install authentication middleware by itself.
+- `AuthorizationLevel.Anonymous` controls the Functions host key requirement; `[AllowAnonymousFunction]` controls the separate Soenneker JWT middleware. Public endpoints generally need both settings to permit unauthenticated requests.
+- Use the marker deliberately. Any request reaching the marked function bypasses the middleware's JWT validation.
